@@ -39,10 +39,10 @@ bool ModulePhysics::Start()
 	b2Filter b;
 	b.categoryBits = 1;
 	b.maskBits = 1 | 0;
-	spring = CreateRectangle(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 25, 12);
+	spring = CreateRectangle(448, 750, 24, 12);
 	spring->body->SetType(b2_dynamicBody);
 	spring->body->GetFixtureList()->SetFilterData(b);
-	pivotSpring = CreateRectangle(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2 )+ 84, 25, 12);
+	pivotSpring = CreateRectangle(448, (750) + 120, 24, 12);
 	pivotSpring->body->SetType(b2_staticBody);
 	pivotSpring->body->GetFixtureList()->SetFilterData(b);
 	App->physics->CreatePrismaticJoint(spring, pivotSpring);
@@ -77,19 +77,19 @@ update_status ModulePhysics::Update()
 		{
 			if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
 			{
-				spinners[i]->body->SetAngularVelocity(-20);
+				spinners[i]->body->SetAngularVelocity(-10);
 				spinners[i]->isActive = true;
 			}
 			if (spinners[i]->isActive == true)
 			{
-				if (spinners[i]->cd <= 5)
+				if (spinners[i]->cd <= 10)
 				{
-					spinners[i]->body->SetAngularVelocity(20);
+					spinners[i]->body->SetAngularVelocity(10);
 				}
 				if (spinners[i]->cd <= 0)
 				{
 					spinners[i]->body->SetAngularVelocity(0);
-					spinners[i]->cd = 10;
+					spinners[i]->cd = 20;
 					spinners[i]->isActive = false;
 				}
 				else
@@ -102,19 +102,19 @@ update_status ModulePhysics::Update()
 		{
 			if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
 			{
-				spinners[i]->body->SetAngularVelocity(20);
+				spinners[i]->body->SetAngularVelocity(10);
 				spinners[i]->isActive = true;
 			}
 			if (spinners[i]->isActive == true)
 			{
-				if (spinners[i]->cd <= 5)
+				if (spinners[i]->cd <= 10)
 				{
-					spinners[i]->body->SetAngularVelocity(-20);
+					spinners[i]->body->SetAngularVelocity(-10);
 				}
 				if (spinners[i]->cd <= 0)
 				{
 					spinners[i]->body->SetAngularVelocity(0);
-					spinners[i]->cd = 10;
+					spinners[i]->cd = 20;
 					spinners[i]->isActive = false;
 				}
 				else
@@ -135,7 +135,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
-
+	
 	b2CircleShape shape;
 	shape.m_radius = PIXEL_TO_METERS(radius);
 	b2FixtureDef fixture;
@@ -213,11 +213,11 @@ void ModulePhysics::CreatePrismaticJoint(PhysBody* dynami, PhysBody* stati)
 	prismaticJoint.bodyB = pivotSpring->body;
 
 	prismaticJoint.localAnchorA.Set(0, 0);
-	prismaticJoint.localAnchorB.Set(0, -1);
+	prismaticJoint.localAnchorB.Set(0, -1.5f);
 	prismaticJoint.localAxisA.Set(0, -1);
 	prismaticJoint.enableLimit = true;
 	prismaticJoint.lowerTranslation = -0.02;
-	prismaticJoint.upperTranslation = 1.0;
+	prismaticJoint.upperTranslation = 1.25f;
 	(b2PrismaticJoint*)world->CreateJoint(&prismaticJoint);
 
 }
@@ -363,7 +363,7 @@ update_status ModulePhysics::PostUpdate()
 				{
 					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
 					b2Vec2 pos = f->GetBody()->GetPosition();
-					App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 255, 255, 255);
+					App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 255, 0, 0);
 				}
 				break;
 
@@ -398,12 +398,12 @@ update_status ModulePhysics::PostUpdate()
 					{
 						v = b->GetWorldPoint(shape->m_vertices[i]);
 						if(i > 0)
-							App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 100, 255, 100);
+							App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 128, 0);
 						prev = v;
 					}
 
 					v = b->GetWorldPoint(shape->m_vertices[0]);
-					App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 100, 255, 100);
+					App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 128, 0);
 				}
 				break;
 

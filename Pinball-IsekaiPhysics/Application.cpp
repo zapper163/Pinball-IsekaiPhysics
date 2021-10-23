@@ -13,8 +13,9 @@
 
 Application::Application()
 {
-	renderer = new ModuleRender(this);
+	
 	window = new ModuleWindow(this);
+	renderer = new ModuleRender(this);
 	textures = new ModuleTextures(this);
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
@@ -29,7 +30,6 @@ Application::Application()
 	// Main Modules
 	AddModule(window);
 	AddModule(physics);
-	AddModule(renderer);
 	AddModule(textures);
 	AddModule(input);
 	AddModule(audio);
@@ -39,6 +39,8 @@ Application::Application()
 	
 	// Player
 	AddModule(player);
+
+	AddModule(renderer);
 }
 
 Application::~Application()
