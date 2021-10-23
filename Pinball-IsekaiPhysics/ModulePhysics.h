@@ -60,6 +60,7 @@ public:
 	PhysBody* CreateChain(int x, int y, int* points, int size);
 
 	Spinner* CreateSpinner(int x, int y, int w, int h, bool left);
+	PhysBody* CreateBouncer(int x, int y, int radius);
 
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);

@@ -32,6 +32,7 @@ bool ModuleSceneIntro::Start()
 
 	App->physics->spinners[0] = App->physics->CreateSpinner(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2, 50, 20, true);
 	App->physics->spinners[1] = App->physics->CreateSpinner((SCREEN_WIDTH / 4) * 3, SCREEN_HEIGHT / 2, 50, 20, false);
+	//App->physics->
 
 	return ret;
 }
