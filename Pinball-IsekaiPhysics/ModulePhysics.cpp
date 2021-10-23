@@ -53,6 +53,7 @@ bool ModulePhysics::Start()
 	fixture.shape = &shape;
 	big_ball->CreateFixture(&fixture);
 	*/
+
 	return true;
 }
 
@@ -77,34 +78,59 @@ update_status ModulePhysics::PreUpdate()
 
 update_status ModulePhysics::Update()
 {
-	if (true)
+	for (size_t i = 0; i < 2; i++)
 	{
-
-	}
-
-
-	/*if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
-	{
-		g_body->SetAngularVelocity(-20);
-	}
-	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN)
-	{
-		g_body->SetAngularVelocity(20);
-		isActive = true;
-	}
-	if (isActive == true)
-	{
-		if (cd <= 0)
+		if (i % 2 == 0)
 		{
-			g_body->SetAngularVelocity(0);
-			cd = 5;
-			isActive = false;
+			if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
+			{
+				spinners[i]->body->SetAngularVelocity(-20);
+				spinners[i]->isActive = true;
+			}
+			if (spinners[i]->isActive == true)
+			{
+				if (spinners[i]->cd <= 5)
+				{
+					spinners[i]->body->SetAngularVelocity(20);
+				}
+				if (spinners[i]->cd <= 0)
+				{
+					spinners[i]->body->SetAngularVelocity(0);
+					spinners[i]->cd = 10;
+					spinners[i]->isActive = false;
+				}
+				else
+				{
+					spinners[i]->cd -= DEGTORAD;
+				}
+			}
 		}
 		else
 		{
-			cd -= DEGTORAD;
+			if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+			{
+				spinners[i]->body->SetAngularVelocity(20);
+				spinners[i]->isActive = true;
+			}
+			if (spinners[i]->isActive == true)
+			{
+				if (spinners[i]->cd <= 5)
+				{
+					spinners[i]->body->SetAngularVelocity(-20);
+				}
+				if (spinners[i]->cd <= 0)
+				{
+					spinners[i]->body->SetAngularVelocity(0);
+					spinners[i]->cd = 10;
+					spinners[i]->isActive = false;
+				}
+				else
+				{
+					spinners[i]->cd -= DEGTORAD;
+				}
+			}
 		}
-	}*/
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -219,36 +245,55 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 	return pbody;
 }
 
-bool ModulePhysics::CreateSpinner(int x, int y, int w, int h)
+Spinner* ModulePhysics::CreateSpinner(int x, int y, int w, int h, bool left)
 {
+	Spinner* s = new Spinner();
+
 	b2BodyDef spinner;
 	spinner.type = b2_dynamicBody;
-	spinner.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	if (left)
+	{
+		spinner.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	}
+	else
+	{
+		spinner.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	}
+	
 
-	b2Body* spinner_body = world->CreateBody(&spinner);
+	s->body = world->CreateBody(&spinner);
 
 	b2PolygonShape spinner_box;
 	spinner_box.SetAsBox(PIXEL_TO_METERS(w) * 0.5f, PIXEL_TO_METERS(h) * 0.5f);
 
 	b2FixtureDef spinner_fixture;
 	spinner_fixture.shape = &spinner_box;
-	spinner_body->CreateFixture(&spinner_fixture);
+	s->body->CreateFixture(&spinner_fixture);
 
 	b2BodyDef anchor;
 	anchor.type = b2_staticBody;
-	anchor.position.Set(spinner_body->GetPosition().x - PIXEL_TO_METERS(120), spinner_body->GetPosition().y);
+	if (left)
+	{
+		anchor.position.Set(s->body->GetPosition().x - PIXEL_TO_METERS(w / 2), s->body->GetPosition().y);
+	}
+	else
+	{
+		anchor.position.Set(s->body->GetPosition().x + PIXEL_TO_METERS(w / 2), s->body->GetPosition().y);
+	}
+	
 
-	b2Body* anchor_body = world->CreateBody(&anchor);
+	
+	s->anchor = world->CreateBody(&anchor);
 
 	b2PolygonShape anchor_box;
-	anchor_box.SetAsBox(PIXEL_TO_METERS(20) * 0.5f, PIXEL_TO_METERS(20) * 0.5f);
+	anchor_box.SetAsBox(PIXEL_TO_METERS(1) * 0.5f, PIXEL_TO_METERS(1) * 0.5f);
 
 	b2FixtureDef anchor_fixture;
 	anchor_fixture.shape = &anchor_box;
-	anchor_body->CreateFixture(&anchor_fixture);
+	s->anchor->CreateFixture(&anchor_fixture);
 
 	b2RevoluteJointDef jointDef;
-	jointDef.Initialize(anchor_body, spinner_body, anchor_body->GetWorldCenter());
+	jointDef.Initialize(s->anchor, s->body, s->anchor->GetWorldCenter());
 	jointDef.lowerAngle = -0.5f * b2_pi; // -90 degrees
 	jointDef.upperAngle = 0.25f * b2_pi; // 45 degrees
 	jointDef.enableLimit = true;
@@ -259,7 +304,7 @@ bool ModulePhysics::CreateSpinner(int x, int y, int w, int h)
 	b2RevoluteJoint* joint;
 	joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
 
-	return true;
+	return s;
 }
 
 // 

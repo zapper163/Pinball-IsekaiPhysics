@@ -30,9 +30,8 @@ bool ModuleSceneIntro::Start()
 	//fondo = App->textures->Load("pinball/rick_head.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
-
-	App->physics->CreateSpinner(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 20);
+	App->physics->spinners[0] = App->physics->CreateSpinner(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2, 50, 20, true);
+	App->physics->spinners[1] = App->physics->CreateSpinner((SCREEN_WIDTH / 4) * 3, SCREEN_HEIGHT / 2, 50, 20, false);
 
 	return ret;
 }

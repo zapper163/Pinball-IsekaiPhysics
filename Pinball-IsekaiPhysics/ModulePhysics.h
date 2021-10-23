@@ -15,8 +15,12 @@
 struct Spinner
 {
 	b2Body* body;
+	b2Body* anchor;
 	bool isActive = false;
-	int cd = 5;
+	int cd = 10;
+	int speed = 20;
+
+	bool left;
 };
 
 // Small class to return to other modules to track position and rotation of physics bodies
@@ -55,10 +59,12 @@ public:
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
 	PhysBody* CreateChain(int x, int y, int* points, int size);
 
-	bool CreateSpinner(int x, int y, int w, int h);
+	Spinner* CreateSpinner(int x, int y, int w, int h, bool left);
 
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
+
+	Spinner* spinners[4];
 
 private:
 
@@ -67,5 +73,4 @@ private:
 	b2MouseJoint* mouse_joint;
 	b2Body* ground;
 
-	Spinner* spinners = new Spinner();
 };
