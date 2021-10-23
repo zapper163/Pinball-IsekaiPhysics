@@ -31,9 +31,18 @@ bool ModuleSceneIntro::Start()
 
 	CreateMap();
 
-	App->physics->spinners[0] = App->physics->CreateSpinner(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 2, 50, 20, true);
-	App->physics->spinners[1] = App->physics->CreateSpinner((SCREEN_WIDTH / 4) * 3, SCREEN_HEIGHT / 2, 50, 20, false);
-	//App->physics->
+	ball = App->physics->CreateCircle(448, 750, 10);
+	ball->body->SetBullet(true);
+	ball->listener = this;
+
+	App->physics->spinners[0] = App->physics->CreateSpinner(238, 399, 50, 20, true);
+	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 50, 20, false);
+	App->physics->spinners[2] = App->physics->CreateSpinner(238, 854, 50, 20, true);
+	App->physics->spinners[3] = App->physics->CreateSpinner(332, 854, 50, 20, false);
+	bouncer[0] = App->physics->CreateBouncer(287, 190, 24);
+	bouncer[1] = App->physics->CreateBouncer(240, 628, 24);
+	bouncer[2] = App->physics->CreateBouncer(287, 692, 24);
+	bouncer[3] = App->physics->CreateBouncer(334, 628, 24);
 
 	return ret;
 }
@@ -46,9 +55,29 @@ bool ModuleSceneIntro::CleanUp()
 	return true;
 }
 
+update_status ModuleSceneIntro::PreUpdate()
+{
+	if (ball->body->GetPosition().y >= PIXEL_TO_METERS(940))
+	{
+		ball = App->physics->CreateCircle(448, 775, 10);
+		ball->body->SetBullet(true);
+		ball->listener = this;
+	}
+
+	return UPDATE_CONTINUE;
+}
+
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		ball = App->physics->CreateCircle(448, 775, 10);
+		//ball = App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 10);
+		ball->body->SetBullet(true);
+		ball->listener = this;
+	}
+
 	//spring
 	int sPositionX, sPositionY;
 	App->physics->spring->GetPosition(sPositionX, sPositionY);
@@ -56,7 +85,7 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
-		App->physics->spring->body->ApplyForce({ 0, 18 }, { 0, 0 }, true);
+		App->physics->spring->body->ApplyForce({ 0, 10 }, { 0, 0 }, true);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
@@ -71,14 +100,7 @@ update_status ModuleSceneIntro::Update()
 		ray.y = App->input->GetMouseY();
 	}*/
 
-	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12));
-		circles.getLast()->data->listener = this;
-	}
-
 	// Prepare for raycast ------------------------------------------------------
-	
 	iPoint mouse;
 	mouse.x = App->input->GetMouseX();
 	mouse.y = App->input->GetMouseY();
@@ -115,22 +137,28 @@ update_status ModuleSceneIntro::PostUpdate()
 
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	int x, y;
-
-	App->audio->PlayFx(bonus_fx);
-
-	/*
-	if(bodyA)
+	if (bodyA == ball)
 	{
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
+		for (size_t i = 0; i < 4; i++)
+		{
+			if (bodyB == bouncer[i])
+			{
+				b2Vec2 v = 100 * (bodyB->body->GetPosition() - bodyA->body->GetPosition());
+				bodyA->body->ApplyForce({ 100, 100 }, bodyA->body->GetPosition(), true);
+			}
+		}
 	}
-
-	if(bodyB)
+	else if (bodyB == ball)
 	{
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}*/
+		for (size_t i = 0; i < 4; i++)
+		{
+			if (bodyA == bouncer[i])
+			{
+				b2Vec2 v = 100 * (bodyA->body->GetPosition() - bodyB->body->GetPosition());
+				bodyB->body->ApplyForce({ 100, 100 }, bodyB->body->GetPosition(), true);
+			}
+		}
+	}
 }
 
 bool ModuleSceneIntro::CreateMap()

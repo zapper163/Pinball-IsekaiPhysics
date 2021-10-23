@@ -71,7 +71,7 @@ update_status ModulePhysics::PreUpdate()
 
 update_status ModulePhysics::Update()
 {
-	for (size_t i = 0; i < 2; i++)
+	for (size_t i = 0; i < 4; i++)
 	{
 		if (i % 2 == 0)
 		{
@@ -516,6 +516,7 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
 
 void ModulePhysics::BeginContact(b2Contact* contact)
 {
+	LOG("collision");
 	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData();
 	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData();
 

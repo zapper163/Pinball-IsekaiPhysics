@@ -13,6 +13,7 @@ public:
 	~ModuleSceneIntro();
 
 	bool Start();
+	update_status PreUpdate();
 	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
@@ -20,8 +21,11 @@ public:
 
 	bool CreateMap();
 
+	PhysBody* bouncer[4];
+
+	PhysBody* ball;
+
 public:
-	p2List<PhysBody*> circles;
 	p2List<PhysBody*> ricks;
 
 	PhysBody* sensor;
