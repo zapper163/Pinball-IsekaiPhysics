@@ -185,6 +185,49 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 	return pbody;
 }
 
+bool ModulePhysics::CreateSpinner(int x, int y, int w, int h)
+{
+	b2BodyDef spinner;
+	spinner.type = b2_dynamicBody;
+	spinner.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* spinner_body = world->CreateBody(&spinner);
+
+	b2PolygonShape spinner_box;
+	spinner_box.SetAsBox(PIXEL_TO_METERS(w) * 0.5f, PIXEL_TO_METERS(h) * 0.5f);
+
+	b2FixtureDef spinner_fixture;
+	spinner_fixture.shape = &spinner_box;
+	spinner_body->CreateFixture(&spinner_fixture);
+
+	b2BodyDef anchor;
+	anchor.type = b2_staticBody;
+	anchor.position.Set(spinner_body->GetPosition().x - PIXEL_TO_METERS(120), spinner_body->GetPosition().y);
+
+	b2Body* anchor_body = world->CreateBody(&anchor);
+
+	b2PolygonShape anchor_box;
+	anchor_box.SetAsBox(PIXEL_TO_METERS(20) * 0.5f, PIXEL_TO_METERS(20) * 0.5f);
+
+	b2FixtureDef anchor_fixture;
+	anchor_fixture.shape = &anchor_box;
+	anchor_body->CreateFixture(&anchor_fixture);
+
+	b2RevoluteJointDef jointDef;
+	jointDef.Initialize(anchor_body, spinner_body, anchor_body->GetWorldCenter());
+	jointDef.lowerAngle = -0.5f * b2_pi; // -90 degrees
+	jointDef.upperAngle = 0.25f * b2_pi; // 45 degrees
+	jointDef.enableLimit = true;
+	jointDef.maxMotorTorque = 10.0f;
+	jointDef.motorSpeed = 0.0f;
+	jointDef.enableMotor = true;
+
+	b2RevoluteJoint* joint;
+	joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
+
+	return true;
+}
+
 // 
 update_status ModulePhysics::PostUpdate()
 {

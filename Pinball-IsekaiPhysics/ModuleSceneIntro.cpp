@@ -32,6 +32,8 @@ bool ModuleSceneIntro::Start()
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
+	App->physics->CreateSpinner(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 50, 20);
+
 	return ret;
 }
 
