@@ -35,6 +35,18 @@ bool ModulePhysics::Start()
 	b2BodyDef bd;
 	ground = world->CreateBody(&bd);
 
+	//spring
+	b2Filter b;
+	b.categoryBits = 1;
+	b.maskBits = 1 | 0;
+	spring = CreateRectangle(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 25, 12);
+	spring->body->SetType(b2_dynamicBody);
+	spring->body->GetFixtureList()->SetFilterData(b);
+	pivotSpring = CreateRectangle(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2 )+ 84, 25, 12);
+	pivotSpring->body->SetType(b2_staticBody);
+	pivotSpring->body->GetFixtureList()->SetFilterData(b);
+	App->physics->CreatePrismaticJoint(spring, pivotSpring);
+
 	return true;
 }
 
@@ -190,6 +202,24 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	pbody->height = height;
 
 	return pbody;
+}
+
+void ModulePhysics::CreatePrismaticJoint(PhysBody* dynami, PhysBody* stati)
+{
+
+	b2PrismaticJointDef prismaticJoint;
+	prismaticJoint.collideConnected = true;
+	prismaticJoint.bodyA = spring->body;
+	prismaticJoint.bodyB = pivotSpring->body;
+
+	prismaticJoint.localAnchorA.Set(0, 0);
+	prismaticJoint.localAnchorB.Set(0, -1);
+	prismaticJoint.localAxisA.Set(0, -1);
+	prismaticJoint.enableLimit = true;
+	prismaticJoint.lowerTranslation = -0.02;
+	prismaticJoint.upperTranslation = 1.0;
+	(b2PrismaticJoint*)world->CreateJoint(&prismaticJoint);
+
 }
 
 PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)

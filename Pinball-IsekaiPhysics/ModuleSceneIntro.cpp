@@ -48,6 +48,21 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	//spring
+	int sPositionX, sPositionY;
+	App->physics->spring->GetPosition(sPositionX, sPositionY);
+	App->physics->spring->body->ApplyForce({ 0,-10 }, { 0, 0 }, true);
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	{
+		App->physics->spring->body->ApplyForce({ 0,18 }, { 0, 0 }, true);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
+	{
+		App->physics->spring->body->ApplyForce({ 0,-180 }, { 0, 0 }, true);
+	}
+
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		ray_on = !ray_on;

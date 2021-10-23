@@ -62,10 +62,15 @@ public:
 	Spinner* CreateSpinner(int x, int y, int w, int h, bool left);
 	PhysBody* CreateBouncer(int x, int y, int radius);
 
+	void ModulePhysics::CreatePrismaticJoint(PhysBody* dynami, PhysBody* stati);
+
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
 
 	Spinner* spinners[4];
+
+	//Prismatic joint
+	PhysBody* pivotSpring, * spring;
 
 private:
 
