@@ -75,6 +75,40 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
+update_status ModulePhysics::Update()
+{
+	if (true)
+	{
+
+	}
+
+
+	/*if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
+	{
+		g_body->SetAngularVelocity(-20);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_DOWN)
+	{
+		g_body->SetAngularVelocity(20);
+		isActive = true;
+	}
+	if (isActive == true)
+	{
+		if (cd <= 0)
+		{
+			g_body->SetAngularVelocity(0);
+			cd = 5;
+			isActive = false;
+		}
+		else
+		{
+			cd -= DEGTORAD;
+		}
+	}*/
+
+	return UPDATE_CONTINUE;
+}
+
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 {
 	b2BodyDef body;

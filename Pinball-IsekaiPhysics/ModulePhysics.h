@@ -12,6 +12,13 @@
 #define METERS_TO_PIXELS(m) ((int) floor(PIXELS_PER_METER * m))
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
 
+struct Spinner
+{
+	b2Body* body;
+	bool isActive = false;
+	int cd = 5;
+};
+
 // Small class to return to other modules to track position and rotation of physics bodies
 class PhysBody
 {
@@ -39,6 +46,7 @@ public:
 
 	bool Start();
 	update_status PreUpdate();
+	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
 
@@ -58,4 +66,6 @@ private:
 	b2World* world;
 	b2MouseJoint* mouse_joint;
 	b2Body* ground;
+
+	Spinner* spinners = new Spinner();
 };
