@@ -9,9 +9,8 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	circle = fondo = NULL;
+	ball_tex = fondo = NULL;
 	ray_on = false;
-	sensed = false;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -25,7 +24,7 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	//circle = App->textures->Load("pinball/wheel.png"); 
+	ball_tex = App->textures->Load("pinball/ball.png"); 
 	fondo = App->textures->Load("pinball/pinball.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
@@ -130,7 +129,7 @@ update_status ModuleSceneIntro::Update()
 
 update_status ModuleSceneIntro::PostUpdate()
 {
-
+	App->renderer->Blit(ball_tex, METERS_TO_PIXELS(ball->body->GetPosition().x - 10), METERS_TO_PIXELS(ball->body->GetPosition().y - 10));
 
 	return UPDATE_CONTINUE;
 }

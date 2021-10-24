@@ -28,10 +28,7 @@ public:
 public:
 	p2List<PhysBody*> ricks;
 
-	PhysBody* sensor;
-	bool sensed;
-
-	SDL_Texture* circle;
+	SDL_Texture* ball_tex;
 	SDL_Texture* fondo;
 	uint bonus_fx;
 	p2Point<int> ray;

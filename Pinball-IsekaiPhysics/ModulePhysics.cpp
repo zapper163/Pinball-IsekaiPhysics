@@ -262,27 +262,37 @@ Spinner* ModulePhysics::CreateSpinner(int x, int y, int w, int h, bool left)
 
 	b2BodyDef spinner;
 	spinner.type = b2_dynamicBody;
-	if (left)
-	{
-		spinner.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	}
-	else
-	{
-		spinner.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-	}
-	
+	spinner.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	s->body = world->CreateBody(&spinner);
 
-	b2PolygonShape spinner_box;
-	spinner_box.SetAsBox(PIXEL_TO_METERS(w) * 0.5f, PIXEL_TO_METERS(h) * 0.5f);
+	b2PolygonShape spinner_shape;
+	b2Vec2 vertices[4];
+
+	if (left)
+	{
+		vertices[0].Set(-PIXEL_TO_METERS(w / 2), 0.0f);
+		vertices[1].Set(-PIXEL_TO_METERS(h / 2), -PIXEL_TO_METERS(h / 2));
+		vertices[2].Set(PIXEL_TO_METERS(w / 2), 0.0f);
+		vertices[3].Set(-PIXEL_TO_METERS(h / 2), PIXEL_TO_METERS(h / 2));
+	}
+	else
+	{
+		vertices[0].Set(-PIXEL_TO_METERS(w / 2), 0.0f);
+		vertices[1].Set(PIXEL_TO_METERS(h / 2), -PIXEL_TO_METERS(h / 2));
+		vertices[2].Set(PIXEL_TO_METERS(w / 2), 0.0f);
+		vertices[3].Set(PIXEL_TO_METERS(h / 2), PIXEL_TO_METERS(h / 2));
+	}
+	
+	spinner_shape.Set(vertices, 4);
 
 	b2FixtureDef spinner_fixture;
-	spinner_fixture.shape = &spinner_box;
+	spinner_fixture.shape = &spinner_shape;
 	s->body->CreateFixture(&spinner_fixture);
 
 	b2BodyDef anchor;
 	anchor.type = b2_staticBody;
+
 	if (left)
 	{
 		anchor.position.Set(s->body->GetPosition().x - PIXEL_TO_METERS(w / 2), s->body->GetPosition().y);
@@ -291,8 +301,6 @@ Spinner* ModulePhysics::CreateSpinner(int x, int y, int w, int h, bool left)
 	{
 		anchor.position.Set(s->body->GetPosition().x + PIXEL_TO_METERS(w / 2), s->body->GetPosition().y);
 	}
-	
-
 	
 	s->anchor = world->CreateBody(&anchor);
 
