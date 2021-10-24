@@ -29,8 +29,11 @@ public:
 	p2List<PhysBody*> ricks;
 
 	SDL_Texture* ball_tex;
+	SDL_Texture* spinner_tex;
 	SDL_Texture* fondo;
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool ray_on;
+
+	float py;
 };

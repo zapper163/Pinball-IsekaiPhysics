@@ -9,7 +9,7 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	ball_tex = fondo = NULL;
+	ball_tex = fondo = spinner_tex = NULL;
 	ray_on = false;
 }
 
@@ -25,6 +25,7 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	ball_tex = App->textures->Load("pinball/ball.png"); 
+	spinner_tex = App->textures->Load("pinball/spinner.png");
 	fondo = App->textures->Load("pinball/pinball.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
@@ -34,14 +35,16 @@ bool ModuleSceneIntro::Start()
 	ball->body->SetBullet(true);
 	ball->listener = this;
 
-	App->physics->spinners[0] = App->physics->CreateSpinner(238, 399, 50, 20, true);
-	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 50, 20, false);
-	App->physics->spinners[2] = App->physics->CreateSpinner(238, 854, 50, 20, true);
-	App->physics->spinners[3] = App->physics->CreateSpinner(332, 854, 50, 20, false);
+	App->physics->spinners[0] = App->physics->CreateSpinner(238, 399, 50, 14, true);
+	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 50, 14, false);
+	App->physics->spinners[2] = App->physics->CreateSpinner(238, 854, 50, 14, true);
+	App->physics->spinners[3] = App->physics->CreateSpinner(332, 854, 50, 14, false);
 	bouncer[0] = App->physics->CreateBouncer(287, 190, 24);
 	bouncer[1] = App->physics->CreateBouncer(240, 628, 24);
 	bouncer[2] = App->physics->CreateBouncer(287, 692, 24);
 	bouncer[3] = App->physics->CreateBouncer(334, 628, 24);
+
+	py = App->physics->spring->body->GetPosition().y;
 
 	return ret;
 }
@@ -79,6 +82,7 @@ update_status ModuleSceneIntro::Update()
 
 	//spring
 	int sPositionX, sPositionY;
+	
 	App->physics->spring->GetPosition(sPositionX, sPositionY);
 	App->physics->spring->body->ApplyForce({ 0,-10 }, { 0, 0 }, true);
 
@@ -88,8 +92,29 @@ update_status ModuleSceneIntro::Update()
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
-	{
-		App->physics->spring->body->ApplyForce({ 0, -400 }, { 0, 0 }, true);
+	{ 
+		float dif = App->physics->spring->body->GetPosition().y - py;
+
+		if (dif < 1.1f)
+		{
+			App->physics->spring->body->ApplyForce({ 0, -100 }, { 0, 0 }, true);
+		}
+		else if (dif < 1.5f) 
+		{
+			App->physics->spring->body->ApplyForce({ 0, -175 }, { 0, 0 }, true);
+		}
+		else if (dif < 1.9f)
+		{
+			App->physics->spring->body->ApplyForce({ 0, -250 }, { 0, 0 }, true);
+		}
+		else if (dif < 2.3f)
+		{
+			App->physics->spring->body->ApplyForce({ 0, -325 }, { 0, 0 }, true);
+		}
+		else 
+		{
+			App->physics->spring->body->ApplyForce({ 0, -400 }, { 0, 0 }, true);
+		}
 	}
 
 	/*if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
@@ -130,6 +155,11 @@ update_status ModuleSceneIntro::Update()
 update_status ModuleSceneIntro::PostUpdate()
 {
 	App->renderer->Blit(ball_tex, METERS_TO_PIXELS(ball->body->GetPosition().x - 10), METERS_TO_PIXELS(ball->body->GetPosition().y - 10));
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		App->renderer->Blit(spinner_tex, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7));
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -341,6 +371,75 @@ bool ModuleSceneIntro::CreateMap()
 	366, 833
 	};
 
+	int naranjas[8] = {
+	176, 246,
+	180, 246,
+	180, 307,
+	176, 307
+	};
+	
+	int raya1[14] = {
+	198, 551,
+	201, 548,
+	204, 551,
+	204, 568,
+	201, 570,
+	198, 568,
+	198, 553
+	};
+
+	int raya2[14] = {
+	231, 550,
+	233, 548,
+	237, 550,
+	237, 567,
+	234, 570,
+	231, 567,
+	231, 553
+	};
+
+
+	int raya3[14] = {
+	266, 551,
+	269, 548,
+	272, 551,
+	272, 567,
+	269, 570,
+	266, 567,
+	266, 553
+	};
+
+	int raya4[14] = {
+	300, 551,
+	303, 548,
+	306, 551,
+	306, 568,
+	303, 570,
+	300, 567,
+	300, 553
+	};
+
+	int raya5[14] = {
+	334, 550,
+	337, 547,
+	340, 550,
+	340, 567,
+	337, 570,
+	334, 567,
+	334, 552
+	};
+
+	int raya6[14] = {
+	368, 551,
+	371, 547,
+	374, 552,
+	374, 567,
+	371, 570,
+	368, 567,
+	368, 554
+	};
+
+
 	ricks.add(App->physics->CreateChain(0, 0, contorno, 66));
 	ricks.add(App->physics->CreateChain(0, 0, g_derecha, 50));
 	ricks.add(App->physics->CreateChain(0, 0, der_abajo, 18));
@@ -353,6 +452,13 @@ bool ModuleSceneIntro::CreateMap()
 	ricks.add(App->physics->CreateChain(0, 0, raya_arriba_der, 12));
 	ricks.add(App->physics->CreateChain(0, 0, raya_abajo_izq, 16));
 	ricks.add(App->physics->CreateChain(0, 0, raya_abajo_der, 18));
+	ricks.add(App->physics->CreateChain(0, 0, naranjas, 8));
+	ricks.add(App->physics->CreateChain(0, 0, raya1, 14));
+	ricks.add(App->physics->CreateChain(0, 0, raya2, 14));
+	ricks.add(App->physics->CreateChain(0, 0, raya3, 14));
+	ricks.add(App->physics->CreateChain(0, 0, raya4, 14));
+	ricks.add(App->physics->CreateChain(0, 0, raya5, 14));
+	ricks.add(App->physics->CreateChain(0, 0, raya6, 14));
 
 	return true;
 }
