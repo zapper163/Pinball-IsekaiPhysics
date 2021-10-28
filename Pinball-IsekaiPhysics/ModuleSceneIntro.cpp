@@ -29,7 +29,7 @@ bool ModuleSceneIntro::Start()
 	ball_tex = App->textures->Load("pinball/ball.png"); 
 	spinner_tex = App->textures->Load("pinball/spinner.png");
 	fondo = App->textures->Load("pinball/pinball.png");
-	//spring = App->textures->Load("pinball/pinball.png");
+	spring = App->textures->Load("pinball/spring.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
 	CreateMap();
@@ -42,11 +42,13 @@ bool ModuleSceneIntro::Start()
 	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 50, 14, false);
 	App->physics->spinners[2] = App->physics->CreateSpinner(238, 854, 50, 14, true);
 	App->physics->spinners[3] = App->physics->CreateSpinner(332, 854, 50, 14, false);
-	bouncer[0] = App->physics->CreateBouncer(287, 190, 24);
-	bouncer[1] = App->physics->CreateBouncer(240, 628, 24);
-	bouncer[2] = App->physics->CreateBouncer(287, 692, 24);
-	bouncer[3] = App->physics->CreateBouncer(334, 628, 24);
 
+	bouncer[0] = App->physics->CreateBouncer(287, 692, 24);
+	bouncer[1] = App->physics->CreateBouncer(240, 232, 24);
+	bouncer[2] = App->physics->CreateBouncer(287, 296, 24);
+	bouncer[3] = App->physics->CreateBouncer(334, 232, 24);
+
+	//692
 	py = App->physics->spring->body->GetPosition().y;
 
 	return ret;
@@ -169,6 +171,8 @@ update_status ModuleSceneIntro::Update()
 update_status ModuleSceneIntro::PostUpdate()
 {
 	App->renderer->Blit(ball_tex, METERS_TO_PIXELS(ball->body->GetPosition().x - 10), METERS_TO_PIXELS(ball->body->GetPosition().y - 10));
+
+	App->renderer->Blit(spring, METERS_TO_PIXELS(App->physics->spring->body->GetPosition().x - 12), METERS_TO_PIXELS(App->physics->spring->body->GetPosition().y - 6));
 
 	for (size_t i = 0; i < 4; i++)
 	{
