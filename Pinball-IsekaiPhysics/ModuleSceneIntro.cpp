@@ -7,6 +7,8 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
+#include <math.h>
+
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	ball_tex = fondo = spinner_tex = NULL;
@@ -27,6 +29,7 @@ bool ModuleSceneIntro::Start()
 	ball_tex = App->textures->Load("pinball/ball.png"); 
 	spinner_tex = App->textures->Load("pinball/spinner.png");
 	fondo = App->textures->Load("pinball/pinball.png");
+	//spring = App->textures->Load("pinball/pinball.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
 	CreateMap();
@@ -134,7 +137,10 @@ update_status ModuleSceneIntro::Update()
 
 	// All draw functions ------------------------------------------------------
 	SDL_Rect r = { 0, 0, 508, 940 };
+	SDL_Rect s = { 0, 0, 508, 940 };
+
 	App->renderer->Blit(fondo, 0, 0, &r);
+	// App->renderer->Blit(spring, &s);
 
 	// ray -----------------
 	if(ray_on == true)
@@ -148,6 +154,14 @@ update_status ModuleSceneIntro::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
+
+	/*module = sqrt(pow(ball->body->GetLinearVelocity().x, 2) + pow(ball->body->GetLinearVelocity().y, 2));
+	b2Vec2 v_u = { ball->body->GetLinearVelocity().x / module, ball->body->GetLinearVelocity().y / module };
+	
+	if (module > PIXEL_TO_METERS(1500))
+	{
+		ball->body->SetLinearVelocity({ v_u.x * PIXEL_TO_METERS(1500), v_u.y * PIXEL_TO_METERS(1500) });
+	}*/
 
 	return UPDATE_CONTINUE;
 }
@@ -172,8 +186,8 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (bodyB == bouncer[i])
 			{
-				b2Vec2 v = 100 * (bodyB->body->GetPosition() - bodyA->body->GetPosition());
-				bodyA->body->ApplyForce({ 100, 100 }, bodyA->body->GetPosition(), true);
+				//b2Vec2 v = 100 * (bodyB->body->GetPosition() - bodyA->body->GetPosition());
+				//bodyA->body->ApplyForce({ 100, 100 }, bodyA->body->GetPosition(), true);
 			}
 		}
 	}
@@ -183,8 +197,8 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (bodyA == bouncer[i])
 			{
-				b2Vec2 v = 100 * (bodyA->body->GetPosition() - bodyB->body->GetPosition());
-				bodyB->body->ApplyForce({ 100, 100 }, bodyB->body->GetPosition(), true);
+				//b2Vec2 v = 100 * (bodyA->body->GetPosition() - bodyB->body->GetPosition());
+				//->body->ApplyForce({ 100, 100 }, bodyB->body->GetPosition(), true);
 			}
 		}
 	}

@@ -31,9 +31,14 @@ public:
 	SDL_Texture* ball_tex;
 	SDL_Texture* spinner_tex;
 	SDL_Texture* fondo;
+	SDL_Texture* spring;
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool ray_on;
 
 	float py;
+
+	float module;
+	float speedTX;
+	float speedTY;
 };

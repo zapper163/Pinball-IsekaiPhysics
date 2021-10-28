@@ -339,6 +339,7 @@ PhysBody* ModulePhysics::CreateBouncer(int x, int y, int radius)
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
+	fixture.restitution = 5;
 	b->CreateFixture(&fixture);
 
 	PhysBody* bouncer = new PhysBody();
@@ -522,7 +523,7 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
 	return ret;
 }
 
-void ModulePhysics::BeginContact(b2Contact* contact)
+void ModulePhysics::EndContact(b2Contact* contact)
 {
 	LOG("collision");
 	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData();

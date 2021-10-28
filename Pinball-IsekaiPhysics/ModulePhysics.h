@@ -65,7 +65,7 @@ public:
 	void ModulePhysics::CreatePrismaticJoint(PhysBody* dynami, PhysBody* stati);
 
 	// b2ContactListener ---
-	void BeginContact(b2Contact* contact);
+	void EndContact(b2Contact* contact);
 
 	Spinner* spinners[4];
 
