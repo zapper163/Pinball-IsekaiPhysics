@@ -6,6 +6,7 @@
 #include "ModuleTextures.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
+#include "ModuleFonts.h"
 
 #include <math.h>
 
@@ -51,6 +52,9 @@ bool ModuleSceneIntro::Start()
 	//692
 	py = App->physics->spring->body->GetPosition().y;
 
+	char lookupTableChars[] = { " !'#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[/]^_ abcdefghijklmnopqrstuvwxyz{|}~ çüéâäàaçêëèïîìäaéÆæôöòûù" };
+	textFont = App->fonts->Load("pinball/pixel_font.png", lookupTableChars, 8);
+
 	return ret;
 }
 
@@ -66,9 +70,31 @@ update_status ModuleSceneIntro::PreUpdate()
 {
 	if (ball->body->GetPosition().y >= PIXEL_TO_METERS(940))
 	{
-		ball = App->physics->CreateCircle(448, 775, 10);
-		ball->body->SetBullet(true);
-		ball->listener = this;
+		
+		if (numBalls >= 2) {
+			numBalls--;
+			ball = App->physics->CreateCircle(448, 775, 10);
+			ball->body->SetBullet(true);
+			ball->listener = this;
+			/*
+			if (numScoreAct > numScoreHigh) {
+				numScoreHigh = numScoreAct;
+			}
+			numScorePrev = numScoreAct;
+			numScoreAct = 0;
+			*/
+			
+		}
+		else if(numBalls == 1){
+			numBalls--;
+			/*
+			if (numScoreAct > numScoreHigh) {
+				numScoreHigh = numScoreAct;
+			}
+			*/
+		}
+
+		
 	}
 
 	return UPDATE_CONTINUE;
@@ -83,6 +109,18 @@ update_status ModuleSceneIntro::Update()
 		//ball = App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 10);
 		ball->body->SetBullet(true);
 		ball->listener = this;
+	}
+
+	if (numBalls <= 0) {
+		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
+			numBalls = 4;
+			if (numScoreAct > numScoreHigh) {
+				numScoreHigh = numScoreAct;
+			}
+			//numScoreHigh = 0;
+			numScorePrev = numScoreAct;
+			numScoreAct = 0;
+		}
 	}
 
 	//spring
@@ -179,6 +217,38 @@ update_status ModuleSceneIntro::PostUpdate()
 		App->renderer->Blit(spinner_tex, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7));
 	}
 
+	sprintf_s(ballsLeft, 2, "%01d",numBalls);
+	sprintf_s(actualScore, 7, "%06d", numScoreAct);
+	sprintf_s(prevScore, 7, "%06d", numScorePrev);
+	sprintf_s(highScore, 7, "%06d", numScoreHigh);
+
+	App->fonts->BlitText(0,20, textFont, "Balls:");
+	if (numBalls == 1) {
+		App->fonts->BlitText(72, 20, textFont, ballsLeft, 1, 200, 20, 20);
+	}
+	else if(numBalls <= 0){
+		App->fonts->BlitText(72, 20, textFont, ballsLeft);
+		//App->fonts->BlitText(0, 150, textFont, "GAME OVER|SPACE TO|TRY AGAIN",1, 255, 255, 255,1920,20);
+		App->fonts->BlitText(0, 300, textFont, "GAME OVER",1, 200, 20, 20);
+		//App->fonts->BlitText(0, 150, textFont, "GAME OVER");
+		App->fonts->BlitText(10, 320, textFont, "SPACE TO");
+		App->fonts->BlitText(5, 340, textFont, "TRY AGAIN");
+		//App->fonts->BlitText(0, 180, textFont, "PRESS SPACE");
+		//App->fonts->BlitText(0, 200, textFont, "TO TRY AGAIN");
+	}
+	else {
+		App->fonts->BlitText(72, 20, textFont, ballsLeft);
+	}
+	
+	App->fonts->BlitText(0, 50, textFont, "-Score-");
+	App->fonts->BlitText(0, 80, textFont, "Current:");
+	App->fonts->BlitText(0, 100, textFont, actualScore);
+	App->fonts->BlitText(0, 130, textFont, "Previous:");
+	App->fonts->BlitText(0, 150, textFont, prevScore);
+	App->fonts->BlitText(0, 180, textFont, "Highest:");
+	App->fonts->BlitText(0, 200, textFont, highScore);
+	App->fonts->BlitText(0, 230, textFont, "---------");
+
 	return UPDATE_CONTINUE;
 }
 
@@ -190,6 +260,14 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (bodyB == bouncer[i])
 			{
+				if (numScoreAct < 999900) {
+					numScoreAct += 100;
+					App->audio->PlayFx(bonus_fx);
+				}
+				else {
+					numScoreAct = 999999;
+					App->audio->PlayFx(bonus_fx);
+				}
 				//b2Vec2 v = 100 * (bodyB->body->GetPosition() - bodyA->body->GetPosition());
 				//bodyA->body->ApplyForce({ 100, 100 }, bodyA->body->GetPosition(), true);
 			}

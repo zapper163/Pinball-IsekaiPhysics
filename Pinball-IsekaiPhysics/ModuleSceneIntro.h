@@ -41,4 +41,15 @@ public:
 	float module;
 	float speedTX;
 	float speedTY;
+
+	int textFont = -1;
+	int numBalls = 3;
+	char ballsLeft[2] = { "\0" };
+
+	int numScoreAct = 0;
+	int numScoreHigh = 0;
+	int numScorePrev = 0;
+	char actualScore[7] = { "\0" };
+	char highScore[7] = { "\0" };
+	char prevScore[7] = { "\0" };
 };
