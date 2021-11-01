@@ -228,13 +228,23 @@ update_status ModuleSceneIntro::PostUpdate()
 	}
 	else if(numBalls <= 0){
 		App->fonts->BlitText(72, 20, textFont, ballsLeft);
-		//App->fonts->BlitText(0, 150, textFont, "GAME OVER|SPACE TO|TRY AGAIN",1, 255, 255, 255,1920,20);
-		App->fonts->BlitText(0, 300, textFont, "GAME OVER",1, 200, 20, 20);
-		//App->fonts->BlitText(0, 150, textFont, "GAME OVER");
-		App->fonts->BlitText(10, 320, textFont, "SPACE TO");
-		App->fonts->BlitText(5, 340, textFont, "TRY AGAIN");
-		//App->fonts->BlitText(0, 180, textFont, "PRESS SPACE");
-		//App->fonts->BlitText(0, 200, textFont, "TO TRY AGAIN");
+		if (numScoreAct > numScoreHigh) {
+			App->fonts->BlitText(12, 300, textFont, "CONGRATS", 1, 255, 200, 20);
+			App->fonts->BlitText(12, 330, textFont, "YOU BEAT");
+			App->fonts->BlitText(2, 350, textFont, "THE RECORD");
+			App->fonts->BlitText(12, 380, textFont, "SPACE TO");
+			App->fonts->BlitText(7, 400, textFont, "TRY AGAIN");
+		}
+		else {
+			//App->fonts->BlitText(0, 150, textFont, "GAME OVER|SPACE TO|TRY AGAIN",1, 255, 255, 255,1920,20);
+			App->fonts->BlitText(5, 300, textFont, "GAME OVER", 1, 200, 20, 20);
+			//App->fonts->BlitText(0, 150, textFont, "GAME OVER");
+			App->fonts->BlitText(12, 330, textFont, "SPACE TO");
+			App->fonts->BlitText(7, 350, textFont, "TRY AGAIN");
+			//App->fonts->BlitText(0, 180, textFont, "PRESS SPACE");
+			//App->fonts->BlitText(0, 200, textFont, "TO TRY AGAIN");
+		}
+		
 	}
 	else {
 		App->fonts->BlitText(72, 20, textFont, ballsLeft);
