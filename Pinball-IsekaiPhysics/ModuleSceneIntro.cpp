@@ -215,7 +215,8 @@ update_status ModuleSceneIntro::PostUpdate()
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		if (App->physics->spinners[i]->left == true) {
+		if (i % 2 == 0){
+		//if (App->physics->spinners[i]->left == true) {
 			App->renderer->Blit(spinner_tex_izq, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
 		}
 		else {
