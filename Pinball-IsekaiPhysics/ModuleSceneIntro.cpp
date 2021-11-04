@@ -49,6 +49,12 @@ bool ModuleSceneIntro::Start()
 	bouncer[2] = App->physics->CreateBouncer(287, 296, 24);
 	bouncer[3] = App->physics->CreateBouncer(334, 232, 24);
 
+	sensor500[0] = App->physics->CreateRectangleSensor(254, 111, 22, 5);
+	sensor500[1] = App->physics->CreateRectangleSensor(385, 137, 5, 30); //pasillo
+	sensor500[2] = App->physics->CreateRectangleSensor(319, 111, 22, 5);
+
+	sensor1000 = App->physics->CreateRectangleSensor(287, 111, 22, 5);
+
 	//692
 	py = App->physics->spring->body->GetPosition().y;
 
