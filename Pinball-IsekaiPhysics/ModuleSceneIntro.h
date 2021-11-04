@@ -24,8 +24,6 @@ public:
 	PhysBody* bouncer[4];
 
 	PhysBody* ball;
-	PhysBody* sensor500[3];
-	PhysBody* sensor1000;
 
 
 public:
