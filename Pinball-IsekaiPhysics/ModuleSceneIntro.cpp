@@ -12,7 +12,7 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	ball_tex = fondo = spinner_tex = NULL;
+	ball_tex = fondo = spinner_tex_der = spinner_tex_izq = NULL;
 	ray_on = false;
 }
 
@@ -28,7 +28,8 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	ball_tex = App->textures->Load("pinball/ball.png"); 
-	spinner_tex = App->textures->Load("pinball/spinner.png");
+	spinner_tex_der = App->textures->Load("pinball/flipper_der.png");
+	spinner_tex_izq = App->textures->Load("pinball/flipper_izq.png");
 	fondo = App->textures->Load("pinball/pinball.png");
 	spring = App->textures->Load("pinball/spring.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
@@ -48,7 +49,6 @@ bool ModuleSceneIntro::Start()
 	bouncer[1] = App->physics->CreateBouncer(240, 232, 24);
 	bouncer[2] = App->physics->CreateBouncer(287, 296, 24);
 	bouncer[3] = App->physics->CreateBouncer(334, 232, 24);
-
 
 	//692
 	py = App->physics->spring->body->GetPosition().y;
@@ -215,7 +215,13 @@ update_status ModuleSceneIntro::PostUpdate()
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		App->renderer->Blit(spinner_tex, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7));
+		if (App->physics->spinners[i]->left == true) {
+			App->renderer->Blit(spinner_tex_izq, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
+		}
+		else {
+			App->renderer->Blit(spinner_tex_der, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
+		}
+		
 	}
 
 	sprintf_s(ballsLeft, 2, "%01d",numBalls);

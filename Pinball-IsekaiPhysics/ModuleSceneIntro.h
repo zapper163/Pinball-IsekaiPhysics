@@ -25,12 +25,12 @@ public:
 
 	PhysBody* ball;
 
-
 public:
 	p2List<PhysBody*> ricks;
 
 	SDL_Texture* ball_tex;
-	SDL_Texture* spinner_tex;
+	SDL_Texture* spinner_tex_der;
+	SDL_Texture* spinner_tex_izq;
 	SDL_Texture* fondo;
 	SDL_Texture* spring;
 	uint bonus_fx;
