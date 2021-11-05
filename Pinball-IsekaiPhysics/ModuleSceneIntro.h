@@ -27,6 +27,8 @@ public:
 	bool CreateMap();
 
 	PhysBody* bouncer[4];
+	PhysBody* sensor500[3];
+	PhysBody* sensor1000;
 
 	PhysBody* ball;
 
@@ -38,7 +40,12 @@ public:
 	SDL_Texture* spinner_tex_izq;
 	SDL_Texture* fondo;
 	SDL_Texture* spring;
+
 	uint bonus_fx;
+	uint bouncer_fx;
+	uint spinner_fx; 
+	uint shot_fx;
+
 	p2Point<int> ray;
 	bool ray_on;
 

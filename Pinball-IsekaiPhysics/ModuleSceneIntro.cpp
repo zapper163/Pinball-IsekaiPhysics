@@ -33,6 +33,9 @@ bool ModuleSceneIntro::Start()
 	fondo = App->textures->Load("pinball/pinball.png");
 	spring = App->textures->Load("pinball/spring.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
+	spinner_fx = App->audio->LoadFx("pinball/hit_sound.wav");
+	shot_fx = App->audio->LoadFx("pinball/shot_sound.wav");
+	bouncer_fx = App->audio->LoadFx("pinball/bouncer_sound.wav");
 
 	CreateMap();
 
@@ -40,16 +43,21 @@ bool ModuleSceneIntro::Start()
 	ball->body->SetBullet(true);
 	ball->listener = this;
 
-	App->physics->spinners[0] = App->physics->CreateSpinner(238, 399, 50, 14, true);
-	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 50, 14, false);
-	App->physics->spinners[2] = App->physics->CreateSpinner(238, 854, 50, 14, true);
-	App->physics->spinners[3] = App->physics->CreateSpinner(332, 854, 50, 14, false);
+	App->physics->spinners[0] = App->physics->CreateSpinner(238, 399, 55, 8, true);
+	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 55, 8, false);
+	App->physics->spinners[2] = App->physics->CreateSpinner(245, 870, 55, 8, true);
+	App->physics->spinners[3] = App->physics->CreateSpinner(325, 870, 55, 8, false);
 
 	bouncer[0] = App->physics->CreateBouncer(287, 692, 24);
 	bouncer[1] = App->physics->CreateBouncer(240, 232, 24);
 	bouncer[2] = App->physics->CreateBouncer(287, 296, 24);
 	bouncer[3] = App->physics->CreateBouncer(334, 232, 24);
 
+	sensor1000 = App->physics->CreateRectangleSensor(287, 111, 22, 5);
+
+	sensor500[0] = App->physics->CreateRectangleSensor(254, 111, 22, 5);
+	sensor500[1] = App->physics->CreateRectangleSensor(385, 137, 5, 30);
+	sensor500[2] = App->physics->CreateRectangleSensor(319, 111, 22, 5);
 	//692
 	py = App->physics->spring->body->GetPosition().y;
 
@@ -177,6 +185,9 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 	{ 
+
+		App->audio->PlayFx(shot_fx);
+
 		float dif = App->physics->spring->body->GetPosition().y - py;
 
 		if (dif < 1.1f)
@@ -374,10 +385,10 @@ update_status ModuleSceneIntro::PostUpdate()
 	{
 		if (i % 2 == 0){
 		//if (App->physics->spinners[i]->left == true) {
-			App->renderer->Blit(spinner_tex_izq, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
+			App->renderer->Blit(spinner_tex_izq, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 30), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
 		}
 		else {
-			App->renderer->Blit(spinner_tex_der, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
+			App->renderer->Blit(spinner_tex_der, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 30), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
 		}
 		
 	}
@@ -409,7 +420,6 @@ update_status ModuleSceneIntro::PostUpdate()
 			//App->fonts->BlitText(0, 180, textFont, "PRESS SPACE");
 			//App->fonts->BlitText(0, 200, textFont, "TO TRY AGAIN");
 		}
-		
 	}
 	else {
 		App->fonts->BlitText(72, 20, textFont, ballsLeft);
@@ -483,8 +493,16 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (bodyA == bouncer[i])
 			{
-				//b2Vec2 v = 100 * (bodyA->body->GetPosition() - bodyB->body->GetPosition());
-				//->body->ApplyForce({ 100, 100 }, bodyB->body->GetPosition(), true);
+				if (numScoreAct < 999900) {
+					numScoreAct += 100;
+					App->audio->PlayFx(bonus_fx);
+				}
+				else {
+					numScoreAct = 999999;
+					App->audio->PlayFx(bonus_fx);
+				}
+				//b2Vec2 v = 100 * (bodyB->body->GetPosition() - bodyA->body->GetPosition());
+				//bodyA->body->ApplyForce({ 100, 100 }, bodyA->body->GetPosition(), true);
 			}
 		}
 	}
