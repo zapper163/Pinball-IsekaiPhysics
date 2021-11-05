@@ -16,12 +16,19 @@ public:
 	update_status PreUpdate();
 	update_status Update();
 	update_status PostUpdate();
+
+	void ScenePreUpdate();
+	void SceneUpdate();
+	void ScenePostUpdate();
+
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 
 	bool CreateMap();
 
 	PhysBody* bouncer[4];
+	PhysBody* sensor500[3];
+	PhysBody* sensor1000;
 
 	PhysBody* ball;
 
@@ -29,10 +36,16 @@ public:
 	p2List<PhysBody*> ricks;
 
 	SDL_Texture* ball_tex;
-	SDL_Texture* spinner_tex;
+	SDL_Texture* spinner_tex_der;
+	SDL_Texture* spinner_tex_izq;
 	SDL_Texture* fondo;
 	SDL_Texture* spring;
+
 	uint bonus_fx;
+	uint bouncer_fx;
+	uint spinner_fx; 
+	uint shot_fx;
+
 	p2Point<int> ray;
 	bool ray_on;
 

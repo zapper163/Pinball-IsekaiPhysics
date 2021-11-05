@@ -59,6 +59,9 @@
     <ClInclude Include="ModuleFonts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TimeStep.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -95,6 +98,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ModuleFonts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeStep.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

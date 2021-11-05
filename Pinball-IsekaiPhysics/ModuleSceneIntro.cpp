@@ -12,7 +12,7 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	ball_tex = fondo = spinner_tex = NULL;
+	ball_tex = fondo = spinner_tex_der = spinner_tex_izq = NULL;
 	ray_on = false;
 }
 
@@ -28,10 +28,14 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	ball_tex = App->textures->Load("pinball/ball.png"); 
-	spinner_tex = App->textures->Load("pinball/spinner.png");
+	spinner_tex_der = App->textures->Load("pinball/flipper_der.png");
+	spinner_tex_izq = App->textures->Load("pinball/flipper_izq.png");
 	fondo = App->textures->Load("pinball/pinball.png");
 	spring = App->textures->Load("pinball/spring.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
+	spinner_fx = App->audio->LoadFx("pinball/hit_sound.wav");
+	shot_fx = App->audio->LoadFx("pinball/shot_sound.wav");
+	bouncer_fx = App->audio->LoadFx("pinball/bouncer_sound.wav");
 
 	CreateMap();
 
@@ -39,16 +43,21 @@ bool ModuleSceneIntro::Start()
 	ball->body->SetBullet(true);
 	ball->listener = this;
 
-	App->physics->spinners[0] = App->physics->CreateSpinner(238, 399, 50, 14, true);
-	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 50, 14, false);
-	App->physics->spinners[2] = App->physics->CreateSpinner(238, 854, 50, 14, true);
-	App->physics->spinners[3] = App->physics->CreateSpinner(332, 854, 50, 14, false);
+	App->physics->spinners[0] = App->physics->CreateSpinner(238, 399, 55, 8, true);
+	App->physics->spinners[1] = App->physics->CreateSpinner(332, 399, 55, 8, false);
+	App->physics->spinners[2] = App->physics->CreateSpinner(245, 870, 55, 8, true);
+	App->physics->spinners[3] = App->physics->CreateSpinner(325, 870, 55, 8, false);
 
 	bouncer[0] = App->physics->CreateBouncer(287, 692, 24);
 	bouncer[1] = App->physics->CreateBouncer(240, 232, 24);
 	bouncer[2] = App->physics->CreateBouncer(287, 296, 24);
 	bouncer[3] = App->physics->CreateBouncer(334, 232, 24);
 
+	sensor1000 = App->physics->CreateRectangleSensor(287, 111, 22, 5);
+
+	sensor500[0] = App->physics->CreateRectangleSensor(254, 111, 22, 5);
+	sensor500[1] = App->physics->CreateRectangleSensor(385, 137, 5, 30);
+	sensor500[2] = App->physics->CreateRectangleSensor(319, 111, 22, 5);
 	//692
 	py = App->physics->spring->body->GetPosition().y;
 
@@ -68,6 +77,10 @@ bool ModuleSceneIntro::CleanUp()
 
 update_status ModuleSceneIntro::PreUpdate()
 {
+	
+
+	/*
+
 	if (ball->body->GetPosition().y >= PIXEL_TO_METERS(940))
 	{
 		
@@ -83,6 +96,7 @@ update_status ModuleSceneIntro::PreUpdate()
 			numScorePrev = numScoreAct;
 			numScoreAct = 0;
 			*/
+	/*
 			
 		}
 		else if(numBalls == 1){
@@ -92,17 +106,52 @@ update_status ModuleSceneIntro::PreUpdate()
 				numScoreHigh = numScoreAct;
 			}
 			*/
+	/*
 		}
 
 		
 	}
+	*/
 
 	return UPDATE_CONTINUE;
 }
 
+void ModuleSceneIntro::ScenePreUpdate() {
+	if (ball->body->GetPosition().y >= PIXEL_TO_METERS(940))
+	{
+
+		if (numBalls >= 2) {
+			numBalls--;
+			ball = App->physics->CreateCircle(448, 775, 10);
+			ball->body->SetBullet(true);
+			ball->listener = this;
+			/*
+			if (numScoreAct > numScoreHigh) {
+				numScoreHigh = numScoreAct;
+			}
+			numScorePrev = numScoreAct;
+			numScoreAct = 0;
+			*/
+
+		}
+		else if (numBalls == 1) {
+			numBalls--;
+			/*
+			if (numScoreAct > numScoreHigh) {
+				numScoreHigh = numScoreAct;
+			}
+			*/
+		}
+
+
+	}
+}
+
+
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	/*
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
 		ball = App->physics->CreateCircle(448, 775, 10);
@@ -136,6 +185,9 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 	{ 
+
+		App->audio->PlayFx(shot_fx);
+
 		float dif = App->physics->spring->body->GetPosition().y - py;
 
 		if (dif < 1.1f)
@@ -166,8 +218,10 @@ update_status ModuleSceneIntro::Update()
 		ray.x = App->input->GetMouseX();
 		ray.y = App->input->GetMouseY();
 	}*/
+	/*
 
 	// Prepare for raycast ------------------------------------------------------
+	
 	iPoint mouse;
 	mouse.x = App->input->GetMouseX();
 	mouse.y = App->input->GetMouseY();
@@ -176,6 +230,7 @@ update_status ModuleSceneIntro::Update()
 	fVector normal(0.0f, 0.0f);
 
 	// All draw functions ------------------------------------------------------
+	
 	SDL_Rect r = { 0, 0, 508, 940 };
 	SDL_Rect s = { 0, 0, 508, 940 };
 
@@ -194,7 +249,7 @@ update_status ModuleSceneIntro::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
-
+	*/
 	/*module = sqrt(pow(ball->body->GetLinearVelocity().x, 2) + pow(ball->body->GetLinearVelocity().y, 2));
 	b2Vec2 v_u = { ball->body->GetLinearVelocity().x / module, ball->body->GetLinearVelocity().y / module };
 	
@@ -206,15 +261,136 @@ update_status ModuleSceneIntro::Update()
 	return UPDATE_CONTINUE;
 }
 
+void ModuleSceneIntro::SceneUpdate() {
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		ball = App->physics->CreateCircle(448, 775, 10);
+		//ball = App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 10);
+		ball->body->SetBullet(true);
+		ball->listener = this;
+	}
+
+	if (numBalls <= 0) {
+		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
+			numBalls = 4;
+			if (numScoreAct > numScoreHigh) {
+				numScoreHigh = numScoreAct;
+			}
+			//numScoreHigh = 0;
+			numScorePrev = numScoreAct;
+			numScoreAct = 0;
+		}
+	}
+
+	//spring
+	int sPositionX, sPositionY;
+
+	App->physics->spring->GetPosition(sPositionX, sPositionY);
+	App->physics->spring->body->ApplyForce({ 0,-10 }, { 0, 0 }, true);
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	{
+		App->physics->spring->body->ApplyForce({ 0, 10 }, { 0, 0 }, true);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
+	{
+
+		App->audio->PlayFx(shot_fx);
+
+		float dif = App->physics->spring->body->GetPosition().y - py;
+
+		if (dif < 1.1f)
+		{
+			App->physics->spring->body->ApplyForce({ 0, -100 }, { 0, 0 }, true);
+		}
+		else if (dif < 1.5f)
+		{
+			App->physics->spring->body->ApplyForce({ 0, -175 }, { 0, 0 }, true);
+		}
+		else if (dif < 1.9f)
+		{
+			App->physics->spring->body->ApplyForce({ 0, -250 }, { 0, 0 }, true);
+		}
+		else if (dif < 2.3f)
+		{
+			App->physics->spring->body->ApplyForce({ 0, -325 }, { 0, 0 }, true);
+		}
+		else
+		{
+			App->physics->spring->body->ApplyForce({ 0, -400 }, { 0, 0 }, true);
+		}
+	}
+
+	/*if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+	{
+		ray_on = !ray_on;
+		ray.x = App->input->GetMouseX();
+		ray.y = App->input->GetMouseY();
+	}*/
+
+	// Prepare for raycast ------------------------------------------------------
+	/*
+	iPoint mouse;
+	mouse.x = App->input->GetMouseX();
+	mouse.y = App->input->GetMouseY();
+	int ray_hit = ray.DistanceTo(mouse);
+
+	fVector normal(0.0f, 0.0f);
+
+	// All draw functions ------------------------------------------------------
+
+	SDL_Rect r = { 0, 0, 508, 940 };
+	SDL_Rect s = { 0, 0, 508, 940 };
+
+	App->renderer->Blit(fondo, 0, 0, &r);
+	// App->renderer->Blit(spring, &s);
+
+	// ray -----------------
+	if (ray_on == true)
+	{
+		fVector destination(mouse.x - ray.x, mouse.y - ray.y);
+		destination.Normalize();
+		destination *= ray_hit;
+
+		App->renderer->DrawLine(ray.x, ray.y, ray.x + destination.x, ray.y + destination.y, 255, 255, 255);
+
+		if (normal.x != 0.0f)
+			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
+	}
+	*/
+	/*module = sqrt(pow(ball->body->GetLinearVelocity().x, 2) + pow(ball->body->GetLinearVelocity().y, 2));
+	b2Vec2 v_u = { ball->body->GetLinearVelocity().x / module, ball->body->GetLinearVelocity().y / module };
+
+	if (module > PIXEL_TO_METERS(1500))
+	{
+		ball->body->SetLinearVelocity({ v_u.x * PIXEL_TO_METERS(1500), v_u.y * PIXEL_TO_METERS(1500) });
+	}*/
+
+}
+void ModuleSceneIntro::ScenePostUpdate() {
+	sprintf_s(ballsLeft, 2, "%01d", numBalls);
+	sprintf_s(actualScore, 7, "%06d", numScoreAct);
+	sprintf_s(prevScore, 7, "%06d", numScorePrev);
+	sprintf_s(highScore, 7, "%06d", numScoreHigh);
+}
 update_status ModuleSceneIntro::PostUpdate()
 {
+	/*
 	App->renderer->Blit(ball_tex, METERS_TO_PIXELS(ball->body->GetPosition().x - 10), METERS_TO_PIXELS(ball->body->GetPosition().y - 10));
 
 	App->renderer->Blit(spring, METERS_TO_PIXELS(App->physics->spring->body->GetPosition().x - 12), METERS_TO_PIXELS(App->physics->spring->body->GetPosition().y - 6));
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		App->renderer->Blit(spinner_tex, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 25), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7));
+		if (i % 2 == 0){
+		//if (App->physics->spinners[i]->left == true) {
+			App->renderer->Blit(spinner_tex_izq, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 30), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
+		}
+		else {
+			App->renderer->Blit(spinner_tex_der, METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().x - 30), METERS_TO_PIXELS(App->physics->spinners[i]->body->GetPosition().y - 7), 0, 1.0f, App->physics->spinners[i]->body->GetAngle() * RADTODEG);
+		}
+		
 	}
 
 	sprintf_s(ballsLeft, 2, "%01d",numBalls);
@@ -244,7 +420,6 @@ update_status ModuleSceneIntro::PostUpdate()
 			//App->fonts->BlitText(0, 180, textFont, "PRESS SPACE");
 			//App->fonts->BlitText(0, 200, textFont, "TO TRY AGAIN");
 		}
-		
 	}
 	else {
 		App->fonts->BlitText(72, 20, textFont, ballsLeft);
@@ -258,7 +433,7 @@ update_status ModuleSceneIntro::PostUpdate()
 	App->fonts->BlitText(0, 180, textFont, "Highest:");
 	App->fonts->BlitText(0, 200, textFont, highScore);
 	App->fonts->BlitText(0, 230, textFont, "---------");
-
+	*/
 	return UPDATE_CONTINUE;
 }
 
@@ -266,9 +441,57 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	if (bodyA == ball)
 	{
+		if (bodyB == sensor1000) {
+			if (numScoreAct + 1000 <= 999999) {
+				numScoreAct += 1000;
+				App->audio->PlayFx(bonus_fx);
+			}
+			else {
+				numScoreAct = 999999;
+				App->audio->PlayFx(bonus_fx);
+			}
+		}
+		else {
+			for (size_t i = 0; i < 4; i++)
+			{
+				if (bodyB == bouncer[i])
+				{
+					if (numScoreAct +100 <= 999999) {
+						numScoreAct += 100;
+						App->audio->PlayFx(bonus_fx);
+					}
+					else {
+						numScoreAct = 999999;
+						App->audio->PlayFx(bonus_fx);
+					}
+					//b2Vec2 v = 100 * (bodyB->body->GetPosition() - bodyA->body->GetPosition());
+					//bodyA->body->ApplyForce({ 100, 100 }, bodyA->body->GetPosition(), true);
+				}
+			}
+
+			for (size_t i = 0; i < 3; i++)
+			{
+				 if (bodyB == sensor500[i]) {
+					if (numScoreAct + 500 <= 999999) {
+						numScoreAct += 500;
+						App->audio->PlayFx(bonus_fx);
+					}
+					else {
+						numScoreAct = 999999;
+						App->audio->PlayFx(bonus_fx);
+					}
+
+
+				}
+			}
+		}
+	}
+	/*
+	else if (bodyB == ball)
+	{
 		for (size_t i = 0; i < 4; i++)
 		{
-			if (bodyB == bouncer[i])
+			if (bodyA == bouncer[i])
 			{
 				if (numScoreAct < 999900) {
 					numScoreAct += 100;
@@ -283,17 +506,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			}
 		}
 	}
-	else if (bodyB == ball)
-	{
-		for (size_t i = 0; i < 4; i++)
-		{
-			if (bodyA == bouncer[i])
-			{
-				//b2Vec2 v = 100 * (bodyA->body->GetPosition() - bodyB->body->GetPosition());
-				//->body->ApplyForce({ 100, 100 }, bodyB->body->GetPosition(), true);
-			}
-		}
-	}
+	*/
 }
 
 bool ModuleSceneIntro::CreateMap()

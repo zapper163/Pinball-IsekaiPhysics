@@ -17,7 +17,7 @@ struct Spinner
 	b2Body* body;
 	b2Body* anchor;
 	bool isActive = false;
-	int cd = 20;
+	int cd = 10;
 	int speed = 20;
 
 	bool left;
@@ -52,6 +52,11 @@ public:
 	update_status PreUpdate();
 	update_status Update();
 	update_status PostUpdate();
+
+	void PhysicsPreUpdate(double posVel, double t, double dt);
+	void PhysicsUpdate();
+	void PhysicsPostUpdate();
+
 	bool CleanUp();
 
 	PhysBody* CreateCircle(int x, int y, int radius);
@@ -72,7 +77,7 @@ public:
 	//Prismatic joint
 	PhysBody* pivotSpring, * spring;
 
-private:
+public:
 
 	bool debug;
 	b2World* world;

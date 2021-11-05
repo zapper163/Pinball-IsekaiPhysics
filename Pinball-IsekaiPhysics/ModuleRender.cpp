@@ -77,6 +77,20 @@ update_status ModuleRender::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
+void ModuleRender::RenderPreUpdate() {
+	//SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	//SDL_RenderClear(renderer);
+}
+
+void ModuleRender::RenderUpdate() {
+//	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+void ModuleRender::RenderPostUpdate() {
+	//SDL_RenderPresent(renderer);
+}
+
+
 // Called before quitting
 bool ModuleRender::CleanUp()
 {

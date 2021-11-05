@@ -53,6 +53,7 @@ bool ModulePhysics::Start()
 // 
 update_status ModulePhysics::PreUpdate()
 {
+	/*
 	world->Step(1.0f / 60.0f, 6, 2);
 
 	for(b2Contact* c = world->GetContactList(); c; c = c->GetNext())
@@ -65,31 +66,49 @@ update_status ModulePhysics::PreUpdate()
 				pb1->listener->OnCollision(pb1, pb2);
 		}
 	}
-
+	*/
 	return UPDATE_CONTINUE;
+}
+
+
+void ModulePhysics::PhysicsPreUpdate(double posVel, double vel, double pos) {
+	world->Step(posVel, vel, pos);
+	//world->Step(1.0f / 60.0f, 6, 2);
+
+	for (b2Contact* c = world->GetContactList(); c; c = c->GetNext())
+	{
+		if (c->GetFixtureA()->IsSensor() && c->IsTouching())
+		{
+			PhysBody* pb1 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
+			PhysBody* pb2 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
+			if (pb1 && pb2 && pb1->listener)
+				pb1->listener->OnCollision(pb1, pb2);
+		}
+	}
 }
 
 update_status ModulePhysics::Update()
 {
+	/*
 	for (size_t i = 0; i < 4; i++)
 	{
 		if (i % 2 == 0)
 		{
 			if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
 			{
-				spinners[i]->body->SetAngularVelocity(-10);
+				spinners[i]->body->SetAngularVelocity(-15);
 				spinners[i]->isActive = true;
 			}
 			if (spinners[i]->isActive == true)
 			{
-				if (spinners[i]->cd <= 10)
+				if (spinners[i]->cd <= 5)
 				{
-					spinners[i]->body->SetAngularVelocity(10);
+					spinners[i]->body->SetAngularVelocity(15);
 				}
 				if (spinners[i]->cd <= 0)
 				{
 					spinners[i]->body->SetAngularVelocity(0);
-					spinners[i]->cd = 20;
+					spinners[i]->cd = 10;
 					spinners[i]->isActive = false;
 				}
 				else
@@ -102,19 +121,19 @@ update_status ModulePhysics::Update()
 		{
 			if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
 			{
-				spinners[i]->body->SetAngularVelocity(10);
+				spinners[i]->body->SetAngularVelocity(15);
 				spinners[i]->isActive = true;
 			}
 			if (spinners[i]->isActive == true)
 			{
-				if (spinners[i]->cd <= 10)
+				if (spinners[i]->cd <= 5)
 				{
-					spinners[i]->body->SetAngularVelocity(-10);
+					spinners[i]->body->SetAngularVelocity(-15);
 				}
 				if (spinners[i]->cd <= 0)
 				{
 					spinners[i]->body->SetAngularVelocity(0);
-					spinners[i]->cd = 20;
+					spinners[i]->cd = 10;
 					spinners[i]->isActive = false;
 				}
 				else
@@ -124,8 +143,65 @@ update_status ModulePhysics::Update()
 			}
 		}
 	}
+	*/
 
 	return UPDATE_CONTINUE;
+}
+
+void ModulePhysics::PhysicsUpdate(){
+	for (size_t i = 0; i < 4; i++)
+	{
+		if (i % 2 == 0)
+		{
+			if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
+			{
+				spinners[i]->body->SetAngularVelocity(-15);
+				spinners[i]->isActive = true;
+			}
+			if (spinners[i]->isActive == true)
+			{
+				if (spinners[i]->cd <= 5)
+				{
+					spinners[i]->body->SetAngularVelocity(15);
+				}
+				if (spinners[i]->cd <= 0)
+				{
+					spinners[i]->body->SetAngularVelocity(0);
+					spinners[i]->cd = 10;
+					spinners[i]->isActive = false;
+				}
+				else
+				{
+					spinners[i]->cd -= DEGTORAD;
+				}
+			}
+		}
+		else
+		{
+			if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+			{
+				spinners[i]->body->SetAngularVelocity(15);
+				spinners[i]->isActive = true;
+			}
+			if (spinners[i]->isActive == true)
+			{
+				if (spinners[i]->cd <= 5)
+				{
+					spinners[i]->body->SetAngularVelocity(-15);
+				}
+				if (spinners[i]->cd <= 0)
+				{
+					spinners[i]->body->SetAngularVelocity(0);
+					spinners[i]->cd = 10;
+					spinners[i]->isActive = false;
+				}
+				else
+				{
+					spinners[i]->cd -= DEGTORAD;
+				}
+			}
+		}
+	}
 }
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
@@ -267,8 +343,11 @@ Spinner* ModulePhysics::CreateSpinner(int x, int y, int w, int h, bool left)
 	s->body = world->CreateBody(&spinner);
 
 	b2PolygonShape spinner_shape;
-	b2Vec2 vertices[4];
+	spinner_shape.SetAsBox(PIXEL_TO_METERS(w) * 0.5f, PIXEL_TO_METERS(h) * 0.5f);
+	//b2Vec2 vertices[4];
 
+
+	/*
 	if (left)
 	{
 		vertices[0].Set(-PIXEL_TO_METERS(w / 2), 0.0f);
@@ -286,6 +365,7 @@ Spinner* ModulePhysics::CreateSpinner(int x, int y, int w, int h, bool left)
 	
 	spinner_shape.Set(vertices, 4);
 
+	*/
 	b2FixtureDef spinner_fixture;
 	spinner_fixture.shape = &spinner_shape;
 	s->body->CreateFixture(&spinner_fixture);
@@ -350,14 +430,19 @@ PhysBody* ModulePhysics::CreateBouncer(int x, int y, int radius)
 	return bouncer;
 }
 
-// 
 update_status ModulePhysics::PostUpdate()
+{
+	return UPDATE_CONTINUE;
+}
+
+//update_status ModulePhysics::PostUpdate()
+void ModulePhysics::PhysicsPostUpdate()
 {
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
 	if(!debug)
-		return UPDATE_CONTINUE;
+		return;
 
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels
@@ -372,7 +457,7 @@ update_status ModulePhysics::PostUpdate()
 				{
 					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
 					b2Vec2 pos = f->GetBody()->GetPosition();
-					App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 255, 0, 0);
+					//App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 255, 0, 0);
 				}
 				break;
 
@@ -387,13 +472,13 @@ update_status ModulePhysics::PostUpdate()
 					{
 						v = b->GetWorldPoint(polygonShape->GetVertex(i));
 						if(i > 0)
-							App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 100, 100);
+							//App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 100, 100);
 
 						prev = v;
 					}
 
 					v = b->GetWorldPoint(polygonShape->GetVertex(0));
-					App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 100, 100);
+					//App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 100, 100);
 				}
 				break;
 
@@ -407,12 +492,12 @@ update_status ModulePhysics::PostUpdate()
 					{
 						v = b->GetWorldPoint(shape->m_vertices[i]);
 						if(i > 0)
-							App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 128, 0);
+						//	App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 128, 0);
 						prev = v;
 					}
 
 					v = b->GetWorldPoint(shape->m_vertices[0]);
-					App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 128, 0);
+					//App->renderer->DrawLine(METERS_TO_PIXELS(prev.x), METERS_TO_PIXELS(prev.y), METERS_TO_PIXELS(v.x), METERS_TO_PIXELS(v.y), 255, 128, 0);
 				}
 				break;
 
@@ -424,7 +509,7 @@ update_status ModulePhysics::PostUpdate()
 
 					v1 = b->GetWorldPoint(shape->m_vertex0);
 					v1 = b->GetWorldPoint(shape->m_vertex1);
-					App->renderer->DrawLine(METERS_TO_PIXELS(v1.x), METERS_TO_PIXELS(v1.y), METERS_TO_PIXELS(v2.x), METERS_TO_PIXELS(v2.y), 100, 100, 255);
+					//App->renderer->DrawLine(METERS_TO_PIXELS(v1.x), METERS_TO_PIXELS(v1.y), METERS_TO_PIXELS(v2.x), METERS_TO_PIXELS(v2.y), 100, 100, 255);
 				}
 				break;
 			}
@@ -481,7 +566,7 @@ update_status ModulePhysics::PostUpdate()
 			mouse_joint->SetTarget(mousePosition);
 
 			// Draw a red line between both anchor points
-			App->renderer->DrawLine(METERS_TO_PIXELS(mouse_body->GetPosition().x), METERS_TO_PIXELS(mouse_body->GetPosition().y), App->input->GetMouseX(), App->input->GetMouseY(), 255, 0, 0);
+			//App->renderer->DrawLine(METERS_TO_PIXELS(mouse_body->GetPosition().x), METERS_TO_PIXELS(mouse_body->GetPosition().y), App->input->GetMouseX(), App->input->GetMouseY(), 255, 0, 0);
 		}
 	}
 
@@ -499,7 +584,7 @@ update_status ModulePhysics::PostUpdate()
 		}
 	}
 
-	return UPDATE_CONTINUE;
+	return;
 }
 
 
