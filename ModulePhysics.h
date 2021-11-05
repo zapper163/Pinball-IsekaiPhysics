@@ -17,7 +17,7 @@ struct Spinner
 	b2Body* body;
 	b2Body* anchor;
 	bool isActive = false;
-	int cd = 10;
+	int cd = 20;
 	int speed = 20;
 
 	bool left;

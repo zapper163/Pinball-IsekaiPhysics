@@ -96,19 +96,19 @@ update_status ModulePhysics::Update()
 		{
 			if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
 			{
-				spinners[i]->body->SetAngularVelocity(-15);
+				spinners[i]->body->SetAngularVelocity(-10);
 				spinners[i]->isActive = true;
 			}
 			if (spinners[i]->isActive == true)
 			{
-				if (spinners[i]->cd <= 5)
+				if (spinners[i]->cd <= 10)
 				{
-					spinners[i]->body->SetAngularVelocity(15);
+					spinners[i]->body->SetAngularVelocity(10);
 				}
 				if (spinners[i]->cd <= 0)
 				{
 					spinners[i]->body->SetAngularVelocity(0);
-					spinners[i]->cd = 10;
+					spinners[i]->cd = 20;
 					spinners[i]->isActive = false;
 				}
 				else
@@ -121,19 +121,19 @@ update_status ModulePhysics::Update()
 		{
 			if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
 			{
-				spinners[i]->body->SetAngularVelocity(15);
+				spinners[i]->body->SetAngularVelocity(10);
 				spinners[i]->isActive = true;
 			}
 			if (spinners[i]->isActive == true)
 			{
-				if (spinners[i]->cd <= 5)
+				if (spinners[i]->cd <= 10)
 				{
-					spinners[i]->body->SetAngularVelocity(-15);
+					spinners[i]->body->SetAngularVelocity(-10);
 				}
 				if (spinners[i]->cd <= 0)
 				{
 					spinners[i]->body->SetAngularVelocity(0);
-					spinners[i]->cd = 10;
+					spinners[i]->cd = 20;
 					spinners[i]->isActive = false;
 				}
 				else
@@ -343,11 +343,8 @@ Spinner* ModulePhysics::CreateSpinner(int x, int y, int w, int h, bool left)
 	s->body = world->CreateBody(&spinner);
 
 	b2PolygonShape spinner_shape;
-	spinner_shape.SetAsBox(PIXEL_TO_METERS(w) * 0.5f, PIXEL_TO_METERS(h) * 0.5f);
-	//b2Vec2 vertices[4];
+	b2Vec2 vertices[4];
 
-
-	/*
 	if (left)
 	{
 		vertices[0].Set(-PIXEL_TO_METERS(w / 2), 0.0f);
@@ -365,7 +362,6 @@ Spinner* ModulePhysics::CreateSpinner(int x, int y, int w, int h, bool left)
 	
 	spinner_shape.Set(vertices, 4);
 
-	*/
 	b2FixtureDef spinner_fixture;
 	spinner_fixture.shape = &spinner_shape;
 	s->body->CreateFixture(&spinner_fixture);
