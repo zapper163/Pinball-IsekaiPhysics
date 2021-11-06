@@ -16,7 +16,8 @@ public:
 	update_status Update();
 	update_status PostUpdate();
 
-	void renderAll();
+	void integrate(double posVel, double t, double dt);
+	void renderAll(double posVel);
 
 	double frameStart;
 	double telapsed;

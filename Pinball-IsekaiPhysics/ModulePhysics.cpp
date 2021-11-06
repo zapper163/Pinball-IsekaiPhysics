@@ -71,9 +71,10 @@ update_status ModulePhysics::PreUpdate()
 }
 
 
-void ModulePhysics::PhysicsPreUpdate(double posVel, double vel, double pos) {
-	world->Step(posVel, vel, pos);
-	//world->Step(1.0f / 60.0f, 6, 2);
+void ModulePhysics::PhysicsPreUpdate(double posVel, double t, double dt) {
+	//world->Step(dt, posVel, 2);
+	//world->Step(dt, 6, posVel);
+	world->Step(dt, 6, 2);
 
 	for (b2Contact* c = world->GetContactList(); c; c = c->GetNext())
 	{

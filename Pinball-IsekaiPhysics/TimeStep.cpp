@@ -25,43 +25,64 @@ update_status TimeStep::PreUpdate() {
 
 update_status TimeStep::Update() {
 
-	// Fixed delta time + time wait
+	/*
+	// Semi-fixed timestep
+// Fixed dt: if fps < dt --> substep.
+// ! SPIRAL OF DEATH (physics simulation can't keep up)
+	double posvel = 2.0;
+	double t = 0.0;
+	double dt = 1.0 / 60.0; // Fixed 60fps
+	double oldTime = SDL_GetTicks();
+	
+		// Compute current frame time using previous frame's elapsed time
+		double newTime = SDL_GetTicks();
+		double frameTime = newTime - oldTime;
+		oldTime = newTime;
 
+		// Sub-step physics until total remaining frame time is consumed
+		while (frameTime > 0.0)
+		{
+			// Integrate for a dt = min(dt,frameTime)
+			float deltaTime = min(frameTime, dt);
+			integrate(posvel, t, deltaTime);
+			frameTime -= deltaTime; // Consume one sub-step
+			t += deltaTime;
+		}
+
+		// Render
+		renderAll(posvel);
+	*/
+
+	
+	// Fixed delta time + time wait
+	// Perceived time is not constant: constant bullet time!
+
+	double posvel = 2.0;
 	double t = 0.0;
 	double dt = 1.0 / 60.0; // Fixed 60fps = 16ms
-
-
-	// start time counter
-	frameStart = SDL_GetTicks();
-
-	// Integrate for a dt = constant
-	///integrate(posvel, t, dt);
-	App->scene_intro->ScenePreUpdate();
-	App->scene_intro->SceneUpdate();
-	App->scene_intro->ScenePostUpdate();
-	App->physics->PhysicsPreUpdate(dt, 6, 2);
-	App->physics->PhysicsUpdate();
-	App->physics->PhysicsPostUpdate();
-	t += dt;
 	
-	// Render
-	///render(posvel);
+		// start time counter
+		frameStart = SDL_GetTicks();
 
+		// Integrate for a dt = constant
+		integrate(posvel, t, dt);
+		t += dt;
 
-	//SDL_RenderPresent(App->renderer);
-	//App->renderer->RenderPreUpdate();
-	//App->renderer->RenderUpdate();
-	//App->renderer->RenderPostUpdate();
-	renderAll();
+		// Render
+		renderAll(posvel);
 
-	// Measure time elapsed since tic
-	telapsed = SDL_GetTicks() - frameStart; // ex. 5ms
+		// Measure time elapsed since tic
+		telapsed = SDL_GetTicks() - frameStart; // ex. 5ms
 
-	// wait until next frame
-	// only if you have spare time!!!
-	if (dt - telapsed > 0.0f) SDL_Delay(dt - telapsed);
+		// wait until next frame
+		// only if you have spare time!!!
+		if (dt - telapsed > 0.0f) SDL_Delay(dt - telapsed);
+	
 
+	
 
+	
+	
 	return UPDATE_CONTINUE;
 }
 update_status TimeStep::PostUpdate()
@@ -71,7 +92,16 @@ update_status TimeStep::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
-void TimeStep::renderAll()
+void TimeStep::integrate(double posVel, double t, double dt) {
+	App->scene_intro->ScenePreUpdate();
+	App->scene_intro->SceneUpdate();
+	App->scene_intro->ScenePostUpdate();
+	App->physics->PhysicsPreUpdate(posVel, t, dt);
+	App->physics->PhysicsUpdate();
+	App->physics->PhysicsPostUpdate();
+}
+
+void TimeStep::renderAll(double posVel)
 {
 	//_________________________IMPRIMIR UPDATE SCENE_________________________________
 	
