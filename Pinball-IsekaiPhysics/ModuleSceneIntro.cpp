@@ -48,7 +48,7 @@ bool ModuleSceneIntro::Start()
 	App->physics->spinners[2] = App->physics->CreateSpinner(245, 870, 55, 8, true);
 	App->physics->spinners[3] = App->physics->CreateSpinner(325, 870, 55, 8, false);
 
-	bouncer[0] = App->physics->CreateBouncer(287, 692, 24);
+	bouncer[0] = App->physics->CreateBouncer(287, 639, 24);
 	bouncer[1] = App->physics->CreateBouncer(240, 232, 24);
 	bouncer[2] = App->physics->CreateBouncer(287, 296, 24);
 	bouncer[3] = App->physics->CreateBouncer(334, 232, 24);

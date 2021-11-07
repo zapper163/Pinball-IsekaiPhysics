@@ -420,7 +420,7 @@ PhysBody* ModulePhysics::CreateBouncer(int x, int y, int radius)
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
-	fixture.restitution = 3;
+	fixture.restitution = 1.7f;
 	b->CreateFixture(&fixture);
 
 	PhysBody* bouncer = new PhysBody();

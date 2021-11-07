@@ -15,6 +15,34 @@ enum main_states
 	MAIN_FINISH,
 	MAIN_EXIT
 };
+/*
+double t = 0.0;
+	double dt = 1 / 60.0;
+
+	double currentTime = hires_time_in_seconds();
+
+	while ( !quit )
+	{
+		double newTime = hires_time_in_seconds();
+		double frameTime = newTime - currentTime;
+		currentTime = newTime;
+
+		while ( frameTime > 0.0 )
+		{
+			float deltaTime = min( frameTime, dt );
+			integrate( state, t, deltaTime );
+			frameTime -= deltaTime;
+			t += deltaTime;
+		}
+
+		render( state );
+	}
+
+
+
+	*/
+
+
 
 int main(int argc, char ** argv)
 {
@@ -24,9 +52,22 @@ int main(int argc, char ** argv)
 	main_states state = MAIN_CREATION;
 	Application* App = NULL;
 
+	double t = 0.0;
+	double dt = 1 / 60.0;
+
+	double currentTime = SDL_GetTicks();
 
 	while (state != MAIN_EXIT)
 	{
+
+		double newTime = SDL_GetTicks();
+		double frameTime = newTime - currentTime;
+		currentTime = newTime;
+
+		while (frameTime > 0.0)
+		{
+			float deltaTime = min(frameTime, dt);
+
 		switch (state)
 		{
 		case MAIN_CREATION:
@@ -81,6 +122,9 @@ int main(int argc, char ** argv)
 
 			break;
 
+		}
+		frameTime -= deltaTime;
+		t += deltaTime;
 		}
 	}
 
