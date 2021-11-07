@@ -67,7 +67,7 @@ public:
 	Spinner* CreateSpinner(int x, int y, int w, int h, bool left);
 	PhysBody* CreateBouncer(int x, int y, int radius);
 
-	void ModulePhysics::CreatePrismaticJoint(PhysBody* dynami, PhysBody* stati);
+	void CreatePrismaticJoint(PhysBody* dynami, PhysBody* stati);
 
 	// b2ContactListener ---
 	void EndContact(b2Contact* contact);
